@@ -5,8 +5,8 @@ A simple to use JavaScript library for creating highly composable, reactive and 
 of what is possible and more importantly, are not afraid to challenge the status quo.*
 
 ## Getting Started
-To include elementJS in your web project use one of the following methods:
-
+Before getting into the tutorials we recommend that you have some understanding of the following concepts:
+[1] [JavaScript Modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
 ```
 <script type="module">
   import { initDocument } from "https://cdn.jsdelivr.net/gh/GreenAntTech/elementJS@main/element.preview.0.0.1.min.js"
