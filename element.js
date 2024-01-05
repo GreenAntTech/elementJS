@@ -2661,7 +2661,7 @@ async function renderComponents(config, element, ctx) {
         if (elId == 'root') element.setAttribute('el-id', elId);
         const children = element.querySelectorAll('[el-id]');
         for (const childElement of children){
-            await createComponent(childElement, ctx);
+            createComponent(childElement, ctx);
             childElement.setAttribute('el-parent', elId);
             childElement.parent$ = element;
             if (autoRender && childElement.render$) await childElement.render$(config.props);
@@ -2671,7 +2671,7 @@ async function renderComponents(config, element, ctx) {
     } else if (renderingStatus.atClient) {
         const children = element.querySelectorAll(`[el-parent="${elId}"]`);
         for (const childElement of children){
-            await createComponent(childElement, ctx);
+            createComponent(childElement, ctx);
             childElement.parent$ = element;
             if (autoRender && childElement.render$) await childElement.render$(config.props);
             element.children$[childElement.getAttribute('el-id')] = childElement;
@@ -2681,7 +2681,7 @@ async function renderComponents(config, element, ctx) {
         if (elId == 'root') element.setAttribute('el-id', elId);
         const children = element.querySelectorAll('[el-id]');
         for (const childElement of children){
-            await createComponent(childElement, ctx);
+            createComponent(childElement, ctx);
             childElement.setAttribute('el-parent', elId);
             childElement.parent$ = element;
             if (autoRender && childElement.render$) await childElement.render$(config.props);
@@ -2690,12 +2690,13 @@ async function renderComponents(config, element, ctx) {
     }
     return element.children$;
 }
-async function createComponent(element, ctx) {
+function createComponent(element, ctx) {
     if (element.extend$) return;
     const _state = {};
     const _messageListeners = {};
     let _parent = null;
     let _childComponents = {};
+    let _themes = {};
     Object.defineProperties(element, {
         'extend$': {
             value: (obj)=>{
@@ -2765,7 +2766,7 @@ async function createComponent(element, ctx) {
                     element.children$[elId].parent$ = element;
                     return element.children$[elId];
                 }
-                await createComponent(component, ctx);
+                createComponent(component, ctx);
                 component.parent$ = element;
                 element.children$[elId] = component;
                 element.append(component);
@@ -2792,7 +2793,7 @@ async function createComponent(element, ctx) {
                     element.children$[elId].parent$ = element;
                     return element.children$[elId];
                 }
-                await createComponent(component, ctx);
+                createComponent(component, ctx);
                 component.parent$ = element;
                 element.children$[elId] = component;
                 element.prepend(component);
@@ -2819,7 +2820,7 @@ async function createComponent(element, ctx) {
                     element.parent$.children$[elId].parent$ = element;
                     return element.parent$.children$[elId];
                 }
-                await createComponent(component, ctx);
+                createComponent(component, ctx);
                 component.parent$ = element.parent$;
                 element.parent$.children$[elId] = component;
                 element.before(component);
@@ -2846,7 +2847,7 @@ async function createComponent(element, ctx) {
                     element.parent$.children$[elId].parent$ = element;
                     return element.parent$.children$[elId];
                 }
-                await createComponent(component, ctx);
+                createComponent(component, ctx);
                 component.parent$ = element.parent$;
                 element.parent$.children$[elId] = component;
                 element.after(component);
@@ -2906,6 +2907,15 @@ async function createComponent(element, ctx) {
             value: (subject, handler)=>{
                 _messageListeners[subject] = handler;
                 element.setAttribute('el-listening', 'true');
+            }
+        },
+        'theme$': {
+            set: (theme)=>{
+                for(const elId in _themes[theme]){
+                    if (element.children$[elId]) {
+                        element.children$[elId].setAttribute('style', _themes[theme][elId]);
+                    }
+                }
             }
         },
         'unsubscribeTo$': {
@@ -2978,12 +2988,25 @@ async function createComponent(element, ctx) {
                 }
                 return element.children$;
             }
+        },
+        'useThemes$': {
+            value: (themes, theme)=>{
+                for(const theme in themes){
+                    for(const elId in themes[theme]){
+                        if (typeof themes[theme][elId] == 'object') {
+                            let styleValue = '';
+                            for(const style in themes[theme][elId]){
+                                styleValue += `${style}:${themes[theme][elId][style]};`;
+                            }
+                            themes[theme][elId] = styleValue;
+                        }
+                    }
+                }
+                _themes = themes;
+                if (theme) element.theme$ = theme;
+            }
         }
     });
-    if (element.hasAttribute('el-src')) {
-        const module = await ctx.importModule(element.getAttribute('el-src'));
-        element.setAttribute('el-is', module.componentName);
-    }
     const type = element.getAttribute('el-is') || 'component';
     if (componentFactory[type]) componentFactory[type](element, ctx);
     else console.warn(`The component type '${type}' is not registered.`);
@@ -3006,20 +3029,20 @@ async function parseTemplate(element, ctx) {
         const children = element.querySelectorAll('[el-id]');
         for (const childElement of children){
             childElement.setAttribute('el-parent', element.getAttribute('el-id'));
-            await createComponent(childElement, ctx);
+            createComponent(childElement, ctx);
             element.children$[childElement.getAttribute('el-id')] = childElement;
         }
         element.setAttribute('el-rendered', null);
     } else if (element.hasAttribute('el-rendered')) {
         const children = element.querySelectorAll(`[el-parent="${element.getAttribute('el-id')}"]`);
         for (const childElement of children){
-            await createComponent(childElement, ctx);
+            createComponent(childElement, ctx);
             element.children$[childElement.getAttribute('el-id')] = childElement;
         }
     } else {
         const children = element.querySelectorAll('[el-id]');
         for (const childElement of children){
-            await createComponent(childElement, ctx);
+            createComponent(childElement, ctx);
             element.children$[childElement.getAttribute('el-id')] = childElement;
         }
     }
@@ -3031,15 +3054,12 @@ function sanitize(code) {
 registerComponent('component', (el, ctx)=>{
     el.extend$({
         render: async (props)=>{
-            await el.useTemplate$('');
-            if (typeof props.is == 'string' && typeof props.src == 'string') {
-                await ctx.importModule(props.src);
-                const container = await el.append$(`<div el-is="${props.is}" el-id="${props.id || 'container'}"></div>`);
-                delete props.src;
-                delete props.is;
-                delete props.id;
-                await container.render$(props);
-            }
+            el.useTemplate$('');
+        },
+        load: async (value, props)=>{
+            const module = await ctx.importModule(value);
+            const component = await el.append$(`<div el-is="${module.componentName}" el-id="component"></div>`);
+            await component.render$(props);
         }
     });
 });
