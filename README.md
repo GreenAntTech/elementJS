@@ -6,7 +6,7 @@ A simple to use JavaScript library for creating highly composable, reactive and 
 ## Getting Started
 Before getting into the tutorials we recommend that you to be familiar with HTML, CSS and JavaScript.
 
-Each tutorial is designed to introduce a different concepts and how it is implementated in elementJS, with a final project tutorial that is meant to bring everything together.
+Each tutorial is designed to introduce a new concept and how it is implementated in elementJS, with a final project tutorial that is meant to bring everything together.
 
 ### Code Pen Tutorials
 [Tutorial 1 - Components](https://codepen.io/yohanmoore/pen/NWJGNyP/5571e14cccfc97911f0b6033c26a89e2)
