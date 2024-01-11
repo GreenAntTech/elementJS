@@ -10,7 +10,7 @@ Each tutorial is designed to showcase a different feature of elementJS, and thou
 
 ### Tutorials
 
-[Creating and using a component.](https://codepen.io/yohanmoore/pen/NWJGNyP/5571e14cccfc97911f0b6033c26a89e2)
+[Create a component](https://codepen.io/yohanmoore/pen/NWJGNyP/5571e14cccfc97911f0b6033c26a89e2)
 
-[Component properties.](https://codepen.io/yohanmoore/pen/NWJGNyP/5571e14cccfc97911f0b6033c26a89e2)
+[Component properties](https://codepen.io/yohanmoore/pen/mdorOVr/e3c9318feb8938a690e916dac381c58e)
 
