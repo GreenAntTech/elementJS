@@ -16,5 +16,18 @@ nav > a {
     display: block;
     color: white;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    font-weight: 600;
+}
+
+main {
+    position: absolute;
+    top: 0;
+    left: 250px;
+    bottom: 0;
+    right: 0;
+    padding: 10px 10px 0px 10px;
+}
+
+main > h1 {
+    color: #6c4c78;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
