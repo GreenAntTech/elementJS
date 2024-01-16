@@ -16,6 +16,9 @@ nav > a {
     display: block;
     color: white;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    letter-spacing: .05rem;
+    padding-right: 40px;
+    padding-bottom: 10px;
 }
 
 main {
@@ -28,6 +31,7 @@ main {
 }
 
 main > h1 {
-    color: #6c4c78;
+    color: #4c4684;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    margin-top: 15px;
 }
